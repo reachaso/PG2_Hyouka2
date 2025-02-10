@@ -9,5 +9,5 @@ class CollisonCheck
 {
 public:
     static bool CheckCollision(Player* player, Enemy* enemy);
-    static bool CheckCollision(Bullet* bullet, Enemy* enemy);
+    static bool CheckCollision(Player* player, Enemy* enemy,int index);
 };

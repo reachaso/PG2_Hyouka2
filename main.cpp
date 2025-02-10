@@ -2,7 +2,7 @@
 #include "Scene.h"
 #include "struct.h"
 
-const char kWindowTitle[] = "LC1B_04_オオシマタイガ_タイトル";
+const char kWindowTitle[] = "LC1B_04_オオシマタイガ_PG2_評価課題2";
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {

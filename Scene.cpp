@@ -59,26 +59,18 @@ void Scene::Draw()
 
 void Scene::TitleUpdate(char* keys, char* preKeys)
 {
-	if (keys[DIK_1] && preKeys[DIK_1]) {
+	if (keys[DIK_SPACE] && preKeys[DIK_SPACE]) {
 		sceneType = Game;
 	}
 }
 
 void Scene::TitleDraw()
 {
-	Novice::ScreenPrintf(100, 100, "Title");
+	Novice::ScreenPrintf(500, 500, "Press SPACE to start game");
 }
 
 void Scene::GameUpdate(char* keys, char* preKeys)
 {
-	// プレイヤーの更新処理
-	player->Update(keys);
-
-	// 各敵の更新処理
-	for (int i = 0; i < Enemy::kMaxEnemy; ++i) {
-		enemies[i]->Update();
-	}
-
 	//========================================================
 	// 当たり判定のチェック
 	//========================================================
@@ -87,19 +79,33 @@ void Scene::GameUpdate(char* keys, char* preKeys)
 	{
 		for (int j = 0; j < Bullet::kMaxBullet; ++j)
 		{
-			if (collisonCheck->CheckCollision(player, enemies[i]))
-			{
-				// プレイヤーが敵に当たった場合、プレイヤーを非アクティブにする
-				player->SetActive(false);
-			}
-
-			if (collisonCheck->CheckCollision(player->GetBullet(j), enemies[i]))
+			if (collisonCheck->CheckCollision(player, enemies[i], j))
 			{
 				// 弾が敵に当たった場合、敵を非アクティブにする
 				enemies[i]->SetIsAlive(false);
 				player->GetBullet(j)->SetActive(false);
 			}
 		}
+
+		if (collisonCheck->CheckCollision(player, enemies[i]))
+		{
+			// プレイヤーが敵に当たった場合、プレイヤーを非アクティブにする
+			player->SetActive(false);
+		}
+	}
+
+	// プレイヤーの更新処理
+	player->Update(keys);
+
+	// 各敵の更新処理
+	for (int i = 0; i < Enemy::kMaxEnemy; ++i) {
+		enemies[i]->Update();
+	}
+
+	// 全ての敵の残機が無くなった場合、タイトルシーンに移行
+	if (AllEnemiesDefeated() || IsPlayerDead()) {
+		sceneType = Title;
+		Reset();
 	}
 
 	// リセット処理
@@ -127,3 +133,21 @@ void Scene::Reset()
 		enemies[i]->Reset();
 	}
 }
+
+// 全ての敵が倒されたかどうかをチェックする関数
+bool Scene::AllEnemiesDefeated()
+{
+	for (int i = 0; i < Enemy::kMaxEnemy; ++i) {
+		if (enemies[i]->GetLives() > 0) {
+			return false;
+		}
+	}
+	return true;
+}
+
+// プレイヤーが死んだかどうかをチェックする関数
+bool Scene::IsPlayerDead()
+{
+	return !player->GetActive();
+}
+
